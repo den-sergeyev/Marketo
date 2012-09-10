@@ -1,5 +1,4 @@
 require "savon"
-require "savon_model"
 require "openssl/digest"
 
 require "marketo/client"
