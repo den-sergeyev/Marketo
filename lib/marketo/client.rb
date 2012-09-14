@@ -16,6 +16,7 @@ module Marketo
       end
 
       @client.config.soap_version = 1
+      @client.http.auth.ssl.ssl_version = :SSLv3
       @header = AuthenticationHeader.new(access_key, secret_key)
 
       Interface.new(@client, @header)
