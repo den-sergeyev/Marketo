@@ -15,6 +15,7 @@ module Marketo
         wsdl.document = "http://app.marketo.com/soap/mktows/1_4?WSDL"
       end
 
+      @client.config.soap_version = 1
       @header = AuthenticationHeader.new(access_key, secret_key)
 
       Interface.new(@client, @header)
