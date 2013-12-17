@@ -4,6 +4,7 @@ require "openssl/digest"
 require "marketo/client"
 require "marketo/interface"
 require "marketo/lead"
+require "marketo/config"
 
 module Marketo
   class << self

@@ -1,2 +1,5 @@
-access_key: 'bigcorp1_461839624B16E06BA2D663'
-secret_key: '899756834129871744AAEE88DDCC77CDEEDEC1AAAD66'
+#you should put here real key, secret and endpoint to write new cassetes and make rspec pass
+test:
+    access_key: "test_key"
+    secret_key: "test_secret"
+    wsdl_endpoint: "https://some-url.mktoapi.com/soap/mktows/2_2"

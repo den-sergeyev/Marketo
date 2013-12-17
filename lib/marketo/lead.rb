@@ -1,5 +1,7 @@
 module Marketo
   class Lead
+    attr_reader :idnum, :email, :attributes
+
     def initialize(email, idnum = nil)
       @email = email
       @idnum = idnum
@@ -13,18 +15,6 @@ module Marketo
         lead_record.set_attribute(attribute[:attr_name], attribute[:attr_value])
       end
       lead_record
-    end
-
-    def idnum
-      @idnum
-    end
-
-    def email
-      @email
-    end
-
-    def attributes
-      @attributes
     end
 
     def set_attribute(name, value)

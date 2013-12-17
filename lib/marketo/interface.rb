@@ -24,7 +24,7 @@ module Marketo
 
       lead = ParamsGetLead.new("IDNUM", id)
       response = send_request("ns1:paramsGetLead", {:lead_key => lead.to_hash})
-      return Lead.from_hash(response[:success_get_lead][:result][:lead_record_list][:lead_record])
+      Lead.from_hash(response[:success_get_lead][:result][:lead_record_list][:lead_record])
     end
 
     def get_lead_by_email(email)
@@ -32,7 +32,7 @@ module Marketo
 
       lead = ParamsGetLead.new("EMAIL", email)
       response = send_request("ns1:paramsGetLead", {:lead_key => lead.to_hash})
-      return Lead.from_hash(response[:success_get_lead][:result][:lead_record_list][:lead_record])
+      Lead.from_hash(response[:success_get_lead][:result][:lead_record_list][:lead_record])
     end
 
     def sync_lead(email, cookie, user_args = {})
@@ -45,14 +45,26 @@ module Marketo
       end
 
       lead = ParamsSyncLead.new(email, user_args)
-      response = send_request("ns1:paramsSyncLead", {:return_lead => true, :lead_record => lead.to_hash, :marketo_cookie => @cookie})
-      return Lead.from_hash(response[:success_sync_lead][:result][:lead_record])
+      response = send_request("ns1:paramsSyncLead", { :return_lead => true, :lead_record => lead.to_hash, :marketo_cookie => @cookie })
+      Lead.from_hash(response[:success_sync_lead][:result][:lead_record])
     end
 
     def add_lead_to_list(idnum, list_name)
       list = ParamsListOperation.new(list_name, idnum)
       response = send_request("ns1:paramsListOperation", {:list_operation => "ADDTOLIST", :list_key => list.list_key_hash, :list_member_list => list.list_member_hash, :strict => true})
-      return response[:success_list_operation][:result][:success]
+      response[:success_list_operation][:result][:success]
+    end
+
+    def sync_multiple(leads_array)
+      raise Exception, "Empty leads hash, nothing to sync" if leads_array.blank?
+
+      lead_records = []
+      leads_array.each do |attrs|
+        lead_records << ParamsSyncLead.new(attrs["Email"], attrs).to_hash
+      end
+
+      response = send_request("ns1:paramsSyncMultipleLeads", lead_record_list: { lead_record: lead_records })
+      response[:success_sync_multiple_leads][:result][:sync_status_list][:sync_status]
     end
   end
 
