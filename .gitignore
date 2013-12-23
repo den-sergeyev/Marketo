@@ -2,6 +2,8 @@
 .bundle
 Gemfile.lock
 pkg/*
+spec/cassettes/*
+spec/config/marketo.yml
 
 ## MAC OS
 .DS_Store

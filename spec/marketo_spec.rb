@@ -15,6 +15,10 @@ describe Marketo do
       @client = Marketo::Client.new_marketo_client
     end
 
+    before do
+      Rails.stub(:env).and_return(:test)
+    end
+
     after(:all) do
       Timecop.return
     end
@@ -75,9 +79,9 @@ describe Marketo do
       end
 
       it "should sync lead with Marketo" do
-        retVal = @client.sync_lead(USER[:email], COOKIE, {"FirstName"=>USER[:first_name],
-                                                       "LastName"=>USER[:last_name],
-                                                       "Company"=>"Backupify"})
+        retVal = @client.sync_lead(USER[:email], COOKIE, { "FirstName"=>USER[:first_name],
+                                                           "LastName"=>USER[:last_name],
+                                                           "Company"=>"Backupify" })
         retVal.should be_a_kind_of(Marketo::Lead)
       end
 
@@ -92,7 +96,7 @@ describe Marketo do
       end
 
       it "should add lead to marketo list" do
-        retVal = @client.add_lead_to_list(IDNUM, "Inbound Signups").should == true
+        @client.add_lead_to_list(IDNUM, "Inbound Signups").should == true
       end
 
       after do
