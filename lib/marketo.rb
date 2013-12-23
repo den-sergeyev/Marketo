@@ -7,11 +7,13 @@ require "marketo/lead"
 require "marketo/config"
 
 module Marketo
-  class << self
-    attr_accessor :access_key, :secret_key
+extend self
+
+  def configure
+    yield config
   end
 
-  def self.configure
-    yield self
+  def config
+    @config ||= Config.default
   end
 end

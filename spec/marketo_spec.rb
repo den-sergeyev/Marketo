@@ -15,10 +15,6 @@ describe Marketo do
       @client = Marketo::Client.new_marketo_client
     end
 
-    before do
-      Rails.stub(:env).and_return(:test)
-    end
-
     after(:all) do
       Timecop.return
     end
