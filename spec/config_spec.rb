@@ -11,11 +11,11 @@ describe Marketo do
       end
     end
 
-    describe "merge" do
+    describe "merge_params!" do
       it "merges hash of params to existing config" do
         test_hash = { access_key: "some_key", secret_key: "some_secret" }
         config_hash = Marketo::Config.default
-        config_hash.merge(test_hash)
+        config_hash.merge_params!(test_hash)
         config_hash.wsdl_document.should == "https://app.marketo.com/soap/mktows/2_2?WSDL"
         config_hash.access_key.should == "some_key"
         config_hash.secret_key.should == "some_secret"

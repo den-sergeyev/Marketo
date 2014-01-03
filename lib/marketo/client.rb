@@ -10,7 +10,7 @@ module Marketo
 
     def self.new_marketo_client(params = {})
       config = Marketo.config
-      config.merge(params)
+      config.merge_params!(params)
 
       @client = Savon::Client.new do
         http.headers["Pragma"] = "no-cache"

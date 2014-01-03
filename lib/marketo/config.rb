@@ -7,8 +7,8 @@ module Marketo
       config
     end
 
-    def merge(other_params)
-      other_params.each { |key, value| send("#{key}=".to_sym, value) }
+    def merge_params!(other_params)
+      other_params.each { |key, value| send("#{key}=", value) }
     end
   end
 end

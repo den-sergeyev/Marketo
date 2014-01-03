@@ -7,7 +7,7 @@ require "marketo/lead"
 require "marketo/config"
 
 module Marketo
-extend self
+  extend self
 
   def configure
     yield config
