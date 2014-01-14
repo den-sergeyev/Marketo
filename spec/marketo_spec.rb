@@ -5,30 +5,18 @@ require "erb"
 
 describe Marketo do
   describe Marketo::Client do
-    IDNUM = 89381
+    IDNUM = 1000074
     EMAIL = "john@backupify.com"
     COOKIE = "id:572-ZRG-001&token:_mch-localhost-1306412206125-92040"
-    USER = {:email => "john@backupify.com", :first_name => "john", :last_name => "kelly"}
+    USER = { :email => "john@backupify.com", :first_name => "john", :last_name => "kelly" }
 
     before(:all) do
-      @config_options = {}
-      File.open("#{Rails.root}/config/marketo.yml") do |f|
-        @config_options = YAML::load(ERB.new(f.read).result)
-      end
-
-      @client = Marketo::Client.new_marketo_client(@config_options['access_key'], @config_options['secret_key'])
+      Timecop.freeze(Time.parse('17 Dec 2013 18:59:40 GMT'))
+      @client = Marketo::Client.new_marketo_client
     end
 
-    describe 'initialization' do
-      it 'should open the initialization file' do
-        File.exists?("#{Rails.root}/config/marketo.yml").should == true
-
-        @config_options.should have(2).items
-        @config_options.should include("access_key")
-        @config_options.should include("secret_key")
-        #@config_options['access_key'].should == "bigcorp1_461839624B16E06BA2D663"
-        #@config_options['secret_key'].should == "899756834129871744AAEE88DDCC77CDEEDEC1AAAD66"
-      end
+    after(:all) do
+      Timecop.return
     end
 
     describe 'Exception handling' do
@@ -87,10 +75,9 @@ describe Marketo do
       end
 
       it "should sync lead with Marketo" do
-        client = Marketo::Client.new_marketo_client(@config_options['access_key'], @config_options['secret_key'])
-        retVal = client.sync_lead(USER[:email], COOKIE, {"FirstName"=>USER[:first_name],
-                                                       "LastName"=>USER[:last_name],
-                                                       "Company"=>"Backupify"})
+        retVal = @client.sync_lead(USER[:email], COOKIE, { "FirstName"=>USER[:first_name],
+                                                           "LastName"=>USER[:last_name],
+                                                           "Company"=>"Backupify" })
         retVal.should be_a_kind_of(Marketo::Lead)
       end
 
@@ -105,8 +92,37 @@ describe Marketo do
       end
 
       it "should add lead to marketo list" do
-        client = Marketo::Client.new_marketo_client(@config_options['access_key'], @config_options['secret_key'])
-        retVal = client.add_lead_to_list(IDNUM, "Inbound Signups").should == true
+        @client.add_lead_to_list(IDNUM, "Inbound Signups").should == true
+      end
+
+      after do
+        VCR.eject_cassette
+      end
+    end
+
+    describe "Multy sync" do
+      before do
+        VCR.insert_cassette "multy_sync", :record => :new_episodes
+      end
+
+      it "should sync multiple leads with Marketo" do
+        multi_users = [
+          { "Email" => "john@backupify.com", "FirstName" => "john", "LastName" => "kelly" },
+          { "Email" => "admin@backupify.org", "FirstName" => "Reed", "LastName" => "Richards" }
+        ]
+        test_values = [
+          {:lead_id=>"1000074", :status=>"UPDATED", :error=>nil},
+          {:lead_id=>"1000085", :status=>"UPDATED", :error=>nil}
+        ]
+
+        response = @client.sync_multiple multi_users
+
+        response.should == test_values
+      end
+
+      it "should raise exception if empty array is passed" do
+        err_text = "Empty leads hash, nothing to sync"
+        lambda { @client.sync_multiple(nil) }.should raise_exception(Exception, err_text)
       end
 
       after do
