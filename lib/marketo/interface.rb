@@ -10,6 +10,8 @@ module Marketo
     end
 
     def send_request(namespace, body)
+      # Update request time in headers otherwise header becomes invalid after 15 minutes after client initialization.
+      @header.update_request_timestamp
       response = @client.request(namespace) do |soap|
         soap.namespaces["xmlns:ns1"] = "http://www.marketo.com/mktows/"
         soap.body = body
@@ -176,6 +178,10 @@ module Marketo
 
     def get_request_timestamp
       @time.to_s
+    end
+
+    def update_request_timestamp(time = DateTime.now)
+      @time = time
     end
 
     private
