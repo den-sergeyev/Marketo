@@ -1,5 +1,10 @@
 = Marketo
 
+== Test steps
+1. Uncomment customized httpi gem in Gemfile.
+2. Create file spec/config/marketo.yml with proper testing credentials.
+3. Change Timecop freeze statement in marketo_spec.rb to update VCR cassettes first time.
+
 == Setup
 
 Create a config/marketo.yml file:
