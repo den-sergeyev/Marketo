@@ -149,40 +149,23 @@ module Marketo
     end
   end
 
-  class AuthenticationHeader
+  class AuthenticationHeader < Struct.new(:access_key, :secret_key)
     DIGEST = OpenSSL::Digest::Digest.new('sha1')
 
-    def initialize(access_key, secret_key, time = DateTime.now)
-      @access_key = access_key
-      @secret_key = secret_key
-      @time = time
-    end
-
     def to_hash
+      request_timestamp = DateTime.now.to_s
       {
-        "mktowsUserId"     => get_mktows_user_id,
-        "requestSignature" => get_request_signature,
-        "requestTimestamp" => get_request_timestamp
+        "mktowsUserId"     => access_key,
+        "requestSignature" => calculate_signature(request_timestamp),
+        "requestTimestamp" => request_timestamp
       }
     end
 
-    def get_mktows_user_id
-      @access_key
-    end
-
-    def get_request_signature
-      calculate_signature
-    end
-
-    def get_request_timestamp
-      @time.to_s
-    end
-
     private
-    def calculate_signature
-      request_timestamp = get_request_timestamp
-      string_to_encrypt = request_timestamp + @access_key
-      OpenSSL::HMAC.hexdigest(DIGEST, @secret_key, string_to_encrypt)
+
+    def calculate_signature(request_timestamp_string)
+      string_to_encrypt = request_timestamp_string.to_s + access_key
+      OpenSSL::HMAC.hexdigest(DIGEST, secret_key, string_to_encrypt)
     end
   end
 end
