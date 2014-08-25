@@ -1,18 +1,18 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require_relative 'spec_helper'
 require "marketo"
 require "yaml"
 require "erb"
 
 describe Marketo do
-  describe Marketo::Client do
+  describe Marketo::Interface do
     IDNUM = 1000074
     EMAIL = "john@backupify.com"
     COOKIE = "id:572-ZRG-001&token:_mch-localhost-1306412206125-92040"
     USER = { :email => "john@backupify.com", :first_name => "john", :last_name => "kelly" }
 
     before(:all) do
-      Timecop.freeze(Time.parse('17 Dec 2013 18:59:40 GMT'))
-      @client = Marketo::Client.new_marketo_client
+      Timecop.freeze(Time.now)
+      @interface = Marketo::Client.new_marketo_client
     end
 
     after(:all) do
@@ -25,19 +25,19 @@ describe Marketo do
       end
 
       it "should return error if no id is provided" do
-        lambda { @client.get_lead_by_id(nil) }.should raise_exception(Exception, "ID must be provided")
+        lambda { @interface.get_lead_by_id(nil) }.should raise_exception(Exception, "ID must be provided")
       end
 
       it "should return error if no email is provided" do
-        lambda { @client.get_lead_by_email(nil) }.should raise_exception(Exception, "Email must be provided")
+        lambda { @interface.get_lead_by_email(nil) }.should raise_exception(Exception, "Email must be provided")
       end
 
       it "should return SOAP fault if email is invalid" do
-        lambda { @client.get_lead_by_email("JUNK") }.should raise_exception(Savon::SOAP::Fault)
+        lambda { @interface.get_lead_by_email("JUNK") }.should raise_exception(Savon::SOAP::Fault)
       end
 
       it "should return error if no email is provided on sync lead" do
-        lambda { @client.sync_lead(nil, "", {}) }.should raise_exception(Exception, "Email must be provided")
+        lambda { @interface.sync_lead(nil, "", {}) }.should raise_exception(Exception, "Email must be provided")
       end
 
       after do
@@ -52,14 +52,14 @@ describe Marketo do
 
       it "should get lead by id" do
         lead_record = Marketo::Lead.new(nil, IDNUM)
-        retVal = @client.get_lead_by_id(IDNUM)
+        retVal = @interface.get_lead_by_id(IDNUM)
         retVal.should be_a_kind_of(Marketo::Lead)
         retVal.idnum.should == IDNUM
       end
 
       it "should get lead by email" do
         lead_record = Marketo::Lead.new(EMAIL)
-        retVal = @client.get_lead_by_email(EMAIL)
+        retVal = @interface.get_lead_by_email(EMAIL)
         retVal.should be_a_kind_of(Marketo::Lead)
         retVal.email.should == EMAIL
       end
@@ -75,7 +75,7 @@ describe Marketo do
       end
 
       it "should sync lead with Marketo" do
-        retVal = @client.sync_lead(USER[:email], COOKIE, { "FirstName"=>USER[:first_name],
+        retVal = @interface.sync_lead(USER[:email], COOKIE, { "FirstName"=>USER[:first_name],
                                                            "LastName"=>USER[:last_name],
                                                            "Company"=>"Backupify" })
         retVal.should be_a_kind_of(Marketo::Lead)
@@ -92,7 +92,7 @@ describe Marketo do
       end
 
       it "should add lead to marketo list" do
-        @client.add_lead_to_list(IDNUM, "Inbound Signups").should == true
+        @interface.add_lead_to_list(IDNUM, "Inbound Signups").should == true
       end
 
       after do
@@ -115,14 +115,14 @@ describe Marketo do
           {:lead_id=>"1000085", :status=>"UPDATED", :error=>nil}
         ]
 
-        response = @client.sync_multiple multi_users
+        response = @interface.sync_multiple multi_users
 
         response.should == test_values
       end
 
       it "should raise exception if empty array is passed" do
         err_text = "Empty leads hash, nothing to sync"
-        lambda { @client.sync_multiple(nil) }.should raise_exception(Exception, err_text)
+        lambda { @interface.sync_multiple(nil) }.should raise_exception(Exception, err_text)
       end
 
       after do
