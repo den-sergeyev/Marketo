@@ -19,6 +19,16 @@ describe Marketo do
       Timecop.return
     end
 
+    describe 'Client timeouts' do
+      it 'should set open timeout to 240 seconds' do
+        @interface.client.http.open_timeout.should be_equal 240
+      end
+
+      it 'should set read timeout to 240 seconds' do
+        @interface.client.http.read_timeout.should be_equal 240
+      end
+    end
+
     describe 'Exception handling' do
       before do
         VCR.insert_cassette "fault", :record => :new_episodes
