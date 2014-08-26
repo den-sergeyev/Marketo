@@ -11,7 +11,11 @@ describe Marketo do
     USER = { :email => "john@backupify.com", :first_name => "john", :last_name => "kelly" }
 
     before(:all) do
-      Timecop.freeze(Time.now)
+      # To test:
+      # Remove Timecop.freeze or setup Time.now.
+      # Record VCR cassettes with actual responses from Marketo.
+      # Setup Timecop with time of requests to eliminate 'Request expired' Error.
+      Timecop.freeze(Time.parse('17 Dec 2013 18:59:40 GMT'))
       @interface = Marketo::Client.new_marketo_client
     end
 
