@@ -143,5 +143,19 @@ describe Marketo do
         VCR.eject_cassette
       end
     end
+
+    describe 'to_hash' do
+      it 'should update timestamp on every call to avoid request expiration' do
+        @interface = Marketo::Client.new_marketo_client
+
+        first_timestamp = @interface.instance_variable_get(:@header).to_hash["requestTimestamp"]
+        Timecop.freeze(Time.now + 10)
+        second_timestamp = @interface.instance_variable_get(:@header).to_hash["requestTimestamp"]
+
+        first_timestamp.should_not == second_timestamp
+
+        Timecop.return
+      end
+    end
   end
 end
