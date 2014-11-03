@@ -11,7 +11,7 @@ describe Marketo do
     USER = { :email => "john@backupify.com", :first_name => "john", :last_name => "kelly" }
 
     before(:all) do
-      Timecop.freeze(Time.parse('17 Dec 2013 18:59:40 GMT'))
+      #Timecop.freeze(Time.parse('17 Dec 2013 18:59:40 GMT'))
       @client = Marketo::Client.new_marketo_client
     end
 
@@ -112,6 +112,19 @@ describe Marketo do
         ]
         test_values = [
           {:lead_id=>"1000074", :status=>"UPDATED", :error=>nil},
+          {:lead_id=>"1000085", :status=>"UPDATED", :error=>nil}
+        ]
+
+        response = @client.sync_multiple multi_users
+
+        response.should == test_values
+      end
+
+      it "should sync single lead and return array as result" do
+        multi_users = [
+          { "Email" => "admin@backupify.org", "FirstName" => "Reed", "LastName" => "Richards" }
+        ]
+        test_values = [
           {:lead_id=>"1000085", :status=>"UPDATED", :error=>nil}
         ]
 
