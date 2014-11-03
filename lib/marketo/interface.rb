@@ -68,7 +68,14 @@ module Marketo
       end
 
       response = send_request("ns1:paramsSyncMultipleLeads", lead_record_list: { lead_record: lead_records })
-      response[:success_sync_multiple_leads][:result][:sync_status_list][:sync_status]
+      wrap_response(response[:success_sync_multiple_leads][:result][:sync_status_list][:sync_status])
+    end
+
+    private
+
+    # Wraps single lead response into array
+    def wrap_response(response)
+      response.is_a?(Hash) ? [response] : response
     end
   end
 

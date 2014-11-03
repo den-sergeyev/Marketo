@@ -11,7 +11,7 @@ describe Marketo do
     USER = { :email => "john@backupify.com", :first_name => "john", :last_name => "kelly" }
 
     before(:all) do
-      #Timecop.freeze(Time.parse('17 Dec 2013 18:59:40 GMT'))
+      Timecop.freeze(Time.parse('17 Dec 2013 18:59:40 GMT'))
       @client = Marketo::Client.new_marketo_client
     end
 
