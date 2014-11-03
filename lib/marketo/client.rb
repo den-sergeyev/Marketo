@@ -19,7 +19,7 @@ module Marketo
       end
 
       @client.config.soap_version = 1
-      @client.http.auth.ssl.ssl_version = :SSLv3
+      @client.http.auth.ssl.ssl_version = :TLSv1
       @client.http.open_timeout = 240
       @client.http.read_timeout = 240
       @header = AuthenticationHeader.new(config.access_key, config.secret_key)
