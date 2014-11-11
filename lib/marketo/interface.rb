@@ -157,7 +157,7 @@ module Marketo
   end
 
   class AuthenticationHeader < Struct.new(:access_key, :secret_key)
-    DIGEST = OpenSSL::Digest::Digest.new('sha1')
+    DIGEST = OpenSSL::Digest.new('sha1')
 
     def to_hash
       request_timestamp = DateTime.now.to_s
